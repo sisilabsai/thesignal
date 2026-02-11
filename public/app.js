@@ -31,6 +31,8 @@ const currentId = params.get('id');
 const API_BASE = window.location.origin;
 const PREFS_KEY = 'signal:prefs:v1';
 let seedConfig = null;
+let trustedDomains = null;
+let trustedDomainsFetchedAt = 0;
 
 async function ensureSeedConfig() {
   if (seedConfig) return seedConfig;
@@ -40,6 +42,27 @@ async function ensureSeedConfig() {
     seedConfig = null;
   }
   return seedConfig;
+}
+
+async function ensureTrustedDomains(force = false) {
+  const now = Date.now();
+  if (trustedDomains && !force && now - trustedDomainsFetchedAt < 5 * 60 * 1000) {
+    return trustedDomains;
+  }
+  let apiDomains = [];
+  try {
+    const data = await fetchJson('/api/trusted');
+    apiDomains = Array.isArray(data.domains) ? data.domains : [];
+  } catch {
+    apiDomains = [];
+  }
+
+  const seed = await ensureSeedConfig();
+  const seedTrusted = Array.isArray(seed?.trustedDomains) ? seed.trustedDomains : [];
+  const allowlist = Array.isArray(seed?.allowlist) ? seed.allowlist : [];
+  trustedDomains = Array.from(new Set([...seedTrusted, ...allowlist, ...apiDomains])).filter(Boolean);
+  trustedDomainsFetchedAt = now;
+  return trustedDomains;
 }
 
 function escapeHtml(value) {
@@ -178,8 +201,7 @@ function renderDetail(record) {
   const authorLink = record.fingerprint
     ? `<a class="btn ghost" href="/author.html?fingerprint=${encodeURIComponent(record.fingerprint)}">View Author Profile</a>`
     : '';
-  const trustedDomains = seedConfig?.trustedDomains || seedConfig?.allowlist || [];
-  const trustedBadge = isTrustedDomain(record.url, trustedDomains)
+  const trustedBadge = isTrustedDomain(record.url, trustedDomains || [])
     ? '<span class="badge trusted">Trusted source</span>'
     : '';
 
@@ -267,10 +289,7 @@ async function loadOpenFeed(query, sortBy) {
 
     const items = applySort(filtered, sortBy);
     return {
-      items: items.map((item) => ({
-        ...item,
-        trusted: Boolean(item.trusted)
-      })),
+      items,
       total: items.length,
       generatedAt: data.generatedAt
     };
@@ -387,19 +406,20 @@ async function loadIndex() {
     setStatus('');
   }
 
-  if (!seedConfig) {
-    await ensureSeedConfig();
-  }
-  const trustedDomains = seedConfig?.trustedDomains || seedConfig?.allowlist || [];
+  await ensureTrustedDomains();
   const verifiedItems = verified.items.map((item) => ({
     ...item,
-    trusted: isTrustedDomain(item.url, trustedDomains)
+    trusted: isTrustedDomain(item.url, trustedDomains || [])
+  }));
+  const openItems = open.items.map((item) => ({
+    ...item,
+    trusted: Boolean(item.trusted) || isTrustedDomain(item.url, trustedDomains || [])
   }));
 
   renderList(verifiedListEl, verifiedItems, 'verified');
-  renderList(openListEl, open.items, 'open');
+  renderList(openListEl, openItems, 'open');
   updateStats(verified.total, open.total);
-  updateInsights(verifiedItems, open.items);
+  updateInsights(verifiedItems, openItems);
   verifiedCountEl.textContent = verified.total;
   openCountEl.textContent = open.total;
 
@@ -421,6 +441,7 @@ async function loadIndex() {
 
 async function loadDetail(id) {
   try {
+    await ensureTrustedDomains();
     const record = await fetchJson(`/api/signatures/${id}`);
     renderDetail(record);
   } catch (err) {
@@ -441,7 +462,11 @@ clearBtn.addEventListener('click', () => {
   loadIndex();
 });
 
-refreshBtn.addEventListener('click', loadIndex);
+refreshBtn.addEventListener('click', () => {
+  trustedDomains = null;
+  trustedDomainsFetchedAt = 0;
+  loadIndex();
+});
 
 queryInput.addEventListener('keydown', (event) => {
   if (event.key === 'Enter') searchBtn.click();

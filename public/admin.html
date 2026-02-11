@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Review Queue - The Signal</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container header-inner">
+        <div class="brand-wrap">
+          <img class="brand-logo" src="/assets/logo/logo.jpeg" alt="The Signal logo" />
+          <span class="brand">The Signal</span>
+          <span class="pill">Admin</span>
+        </div>
+        <nav class="nav">
+          <a class="nav-link" href="/">Index</a>
+          <a class="nav-link" href="/submit.html">Submit Source</a>
+          <a class="nav-link" href="/extension.html">Install Extension</a>
+          <a class="nav-link" href="https://github.com/sisilabsai/thesignal" target="_blank" rel="noreferrer">GitHub</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="container" style="padding: 40px 24px 64px;">
+      <section class="admin-hero">
+        <div class="tag">Admin control room</div>
+        <h1>Moderate submissions, content, and communications</h1>
+        <p class="hero-lede">Approve publishers, manage trusted domains, and keep the index clean.</p>
+      </section>
+
+      <section class="admin-grid">
+        <div class="profile-card">
+          <h3>Admin access</h3>
+          <p class="muted">Sign in with admin credentials or set a token for this browser.</p>
+          <div class="admin-auth-grid">
+            <div>
+              <label class="control-label" for="admin-email">Email</label>
+              <input id="admin-email" class="form-input" type="email" placeholder="admin@domain.com" autocomplete="username" />
+            </div>
+            <div>
+              <label class="control-label" for="admin-password">Password</label>
+              <input id="admin-password" class="form-input" type="password" placeholder="••••••••" autocomplete="current-password" />
+            </div>
+            <button id="login-btn" class="btn secondary" type="button">Sign in</button>
+          </div>
+          <div class="admin-divider">Or use admin token</div>
+          <div class="token-row">
+            <input id="admin-token" class="form-input" type="password" placeholder="Admin token" autocomplete="off" />
+            <button id="save-token" class="btn secondary" type="button">Save</button>
+            <button id="clear-token" class="btn ghost" type="button">Clear</button>
+          </div>
+          <div class="inline-row" style="margin-top: 10px;">
+            <button id="logout-btn" class="btn outline" type="button">Logout</button>
+            <div class="helper-text" id="token-status"></div>
+          </div>
+        </div>
+
+        <div class="profile-card">
+          <h3>Overview</h3>
+          <div class="admin-stats" id="overview-cards"></div>
+          <div class="status" id="overview-status"></div>
+        </div>
+      </section>
+
+      <section class="admin-section">
+        <div class="admin-toolbar">
+          <div>
+            <h3>Submissions</h3>
+            <p class="muted">Approve to trust domains. Reject to close out.</p>
+          </div>
+          <div class="inline-row">
+            <select id="submissions-filter">
+              <option value="pending">Pending</option>
+              <option value="approved">Approved</option>
+              <option value="rejected">Rejected</option>
+              <option value="all">All</option>
+            </select>
+            <button id="refresh-submissions" class="btn outline" type="button">Refresh</button>
+          </div>
+        </div>
+        <div class="status" id="submissions-status"></div>
+        <div class="queue-list" id="submissions-list"></div>
+        <div class="empty hidden" id="submissions-empty">No submissions found.</div>
+      </section>
+
+      <section class="admin-section">
+        <div class="admin-toolbar">
+          <div>
+            <h3>Verified content</h3>
+            <p class="muted">Search and remove items from the index.</p>
+          </div>
+          <div class="inline-row">
+            <input id="records-query" class="form-input" type="search" placeholder="Search verified entries" />
+            <button id="search-records" class="btn outline" type="button">Search</button>
+          </div>
+        </div>
+        <div class="status" id="records-status"></div>
+        <div class="queue-list" id="records-list"></div>
+        <div class="empty hidden" id="records-empty">No verified entries found.</div>
+      </section>
+
+      <section class="admin-section">
+        <div class="admin-toolbar">
+          <div>
+            <h3>Authors</h3>
+            <p class="muted">See active fingerprints and contributions.</p>
+          </div>
+          <button id="refresh-authors" class="btn outline" type="button">Refresh</button>
+        </div>
+        <div class="status" id="authors-status"></div>
+        <div class="author-grid" id="authors-list"></div>
+        <div class="empty hidden" id="authors-empty">No authors found.</div>
+      </section>
+
+      <section class="admin-section">
+        <div class="admin-toolbar">
+          <div>
+            <h3>Communications</h3>
+            <p class="muted">Manage saved alerts and notifications.</p>
+          </div>
+          <button id="refresh-alerts" class="btn outline" type="button">Refresh</button>
+        </div>
+        <div class="status" id="alerts-status"></div>
+        <div class="queue-list" id="alerts-list"></div>
+        <div class="empty hidden" id="alerts-empty">No alerts yet.</div>
+      </section>
+
+      <section class="admin-section">
+        <div class="admin-toolbar">
+          <div>
+            <h3>Trusted domains</h3>
+            <p class="muted">Domains approved via submissions.</p>
+          </div>
+          <button id="refresh-trusted" class="btn outline" type="button">Refresh</button>
+        </div>
+        <div class="trusted-list" id="trusted-list"></div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-inner">
+        <div>
+          <div class="brand">The Signal</div>
+          <div class="muted">Restoring the human premium to the web.</div>
+        </div>
+        <div class="footer-links">
+          <a href="/">Index</a>
+          <a href="/submit.html">Submit Source</a>
+          <a href="/api/health">API</a>
+        </div>
+      </div>
+    </footer>
+
+    <script src="/admin.js"></script>
+  </body>
+</html>

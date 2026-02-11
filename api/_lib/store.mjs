@@ -3,13 +3,15 @@ import { Redis } from '@upstash/redis';
 const KV_KEYS = {
   records: 'signal:records',
   submissions: 'signal:submissions',
-  alerts: 'signal:alerts'
+  alerts: 'signal:alerts',
+  trustedDomains: 'signal:trustedDomains'
 };
 
 const memoryStore = globalThis.__signalMemoryStore || {
   records: [],
   submissions: [],
-  alerts: []
+  alerts: [],
+  trustedDomains: []
 };
 if (!globalThis.__signalMemoryStore) {
   globalThis.__signalMemoryStore = memoryStore;
@@ -59,10 +61,32 @@ export async function addSubmission(submission) {
   return submission;
 }
 
+export async function setSubmissions(submissions) {
+  await writeList(KV_KEYS.submissions, submissions);
+}
+
 export async function getAlerts() {
   return readList(KV_KEYS.alerts, []);
 }
 
 export async function setAlerts(alerts) {
   await writeList(KV_KEYS.alerts, alerts);
+}
+
+export async function getTrustedDomains() {
+  return readList(KV_KEYS.trustedDomains, []);
+}
+
+export async function setTrustedDomains(domains) {
+  await writeList(KV_KEYS.trustedDomains, domains);
+}
+
+export async function addTrustedDomain(domain) {
+  if (!domain) return null;
+  const domains = await getTrustedDomains();
+  if (!domains.includes(domain)) {
+    domains.push(domain);
+    await setTrustedDomains(domains);
+  }
+  return domain;
 }

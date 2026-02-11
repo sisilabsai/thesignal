@@ -171,6 +171,14 @@ https://thesignal-rho.vercel.app
 - Captcha (optional)
   - `HCAPTCHA_SECRET`
   - Update `public/config.json` with `hcaptchaSiteKey`
+- Captcha fallback (optional)
+  - `HCAPTCHA_FAIL_OPEN=true` (allows fallback if captcha widget fails)
+- Admin review
+  - `ADMIN_TOKEN`
+  - `ADMIN_EMAIL`
+  - `ADMIN_PASSWORD_HASH`
+  - `ADMIN_PASSWORD_SALT`
+  - (dev only) `ADMIN_PASSWORD`
 
 ## Alert scheduler
 

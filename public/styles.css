@@ -63,6 +63,14 @@ p {
   gap: 12px;
 }
 
+.brand-logo {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  object-fit: cover;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
+}
+
 .brand {
   font-size: 22px;
   font-weight: 700;
@@ -782,6 +790,124 @@ textarea.form-input {
   margin-top: 12px;
 }
 
+.admin-hero {
+  margin-bottom: 18px;
+}
+
+.admin-grid {
+  display: grid;
+  gap: 18px;
+}
+
+.admin-auth-grid {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  align-items: end;
+  margin-bottom: 12px;
+}
+
+.admin-divider {
+  font-size: 12px;
+  color: var(--muted);
+  margin: 10px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.admin-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+}
+
+.admin-section {
+  margin-top: 24px;
+}
+
+.token-row {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: minmax(220px, 1fr) auto auto;
+  align-items: center;
+}
+
+.admin-toolbar {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  margin-bottom: 10px;
+}
+
+.queue-list {
+  display: grid;
+  gap: 12px;
+}
+
+.queue-item {
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 14px;
+  background: #fff;
+}
+
+.queue-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+
+.queue-head h4 {
+  margin: 0 0 6px;
+  font-size: 16px;
+}
+
+.queue-meta {
+  display: grid;
+  gap: 6px;
+  font-size: 13px;
+  margin: 10px 0;
+  color: #333;
+}
+
+.queue-meta a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.queue-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.author-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+
+.author-card {
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 14px;
+  background: #fff;
+}
+
+.author-card h4 {
+  margin: 0 0 8px;
+}
+
+.trusted-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
 .detail .code pre {
   background: #0f172a;
   color: #d9d9d9;
@@ -900,6 +1026,10 @@ code {
   .control-row {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .token-row {
+    grid-template-columns: 1fr;
   }
 
   .results.split {

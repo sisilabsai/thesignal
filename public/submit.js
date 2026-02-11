@@ -14,6 +14,7 @@ const suggestionEmptyEl = document.getElementById('suggestion-empty');
 const previewTitleEl = document.getElementById('preview-title');
 const previewDescEl = document.getElementById('preview-desc');
 const captchaContainer = document.getElementById('captcha-container');
+const captchaStatusEl = document.getElementById('captcha-status');
 const honeypotInput = document.getElementById('company');
 
 const CATEGORY_OPTIONS = [
@@ -36,6 +37,7 @@ let scanTimeout = null;
 let previewTimeout = null;
 let startedAt = new Date().toISOString();
 let captchaEnabled = false;
+let captchaReady = false;
 
 function setStatus(message, isError = false) {
   statusEl.textContent = message;
@@ -50,6 +52,12 @@ function setScanStatus(message, isError = false) {
 function setPreview(title, description) {
   previewTitleEl.textContent = title || 'No sample selected.';
   previewDescEl.textContent = description || '';
+}
+
+function setCaptchaStatus(message, isError = false) {
+  if (!captchaStatusEl) return;
+  captchaStatusEl.textContent = message;
+  captchaStatusEl.style.color = isError ? '#b00020' : '#5f5b54';
 }
 
 function normalizeCategory(value) {
@@ -207,13 +215,25 @@ async function loadCaptcha() {
     const res = await fetch('/config.json');
     if (!res.ok) return;
     const config = await res.json();
-    if (!config.hcaptchaSiteKey) return;
+    if (!config.hcaptchaSiteKey) {
+      setCaptchaStatus('Captcha not enabled for this environment.');
+      return;
+    }
 
     captchaEnabled = true;
+    setCaptchaStatus('Loading captcha...');
     const script = document.createElement('script');
     script.src = 'https://js.hcaptcha.com/1/api.js';
     script.async = true;
     script.defer = true;
+    script.onload = () => {
+      captchaReady = true;
+      setCaptchaStatus('Captcha ready.');
+    };
+    script.onerror = () => {
+      captchaReady = false;
+      setCaptchaStatus('Captcha unavailable. You can still submit.', true);
+    };
     document.head.appendChild(script);
 
     const widget = document.createElement('div');
@@ -243,11 +263,15 @@ async function submitForm(event) {
 
   if (captchaEnabled) {
     const token = window.hcaptcha?.getResponse?.() || '';
-    if (!token) {
+    if (token) {
+      payload.captchaToken = token;
+    } else if (captchaReady) {
       setStatus('Please complete the captcha.', true);
       return;
+    } else {
+      payload.captchaFallback = 'unavailable';
+      setCaptchaStatus('Captcha unavailable. Submission will use fallback.', true);
     }
-    payload.captchaToken = token;
   }
 
   if (!payload.name || !payload.url || !payload.contactEmail) {

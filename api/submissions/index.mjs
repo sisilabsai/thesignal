@@ -59,7 +59,7 @@ export default async function handler(req, res) {
   }
 
   if (captchaRequired()) {
-    const captcha = await verifyCaptcha(payload.captchaToken, getClientKey(req));
+    const captcha = await verifyCaptcha(payload.captchaToken, getClientKey(req), payload.captchaFallback);
     if (!captcha.ok) {
       sendJson(res, 400, { error: captcha.error || 'Captcha failed' });
       return;
@@ -69,6 +69,7 @@ export default async function handler(req, res) {
   const submission = {
     id: randomUUID(),
     createdAt: new Date().toISOString(),
+    status: 'pending',
     name: normalizeAuthorField(payload.name).slice(0, 120),
     url: normalizeAuthorField(payload.url).slice(0, 300),
     contactEmail: normalizeAuthorField(payload.contactEmail).slice(0, 200),

@@ -38,6 +38,12 @@ This repo contains the first MVP for The Signal:
   - Optional: `SUBMISSIONS_NOTIFY` (where submission emails are sent)
 - To send alerts, schedule a cron to POST `/api/alerts/run` (Vercel Cron or external scheduler).
 - For captcha on submissions, set `HCAPTCHA_SECRET` and update `public/config.json` with your `hcaptchaSiteKey`.
+- To allow client-side captcha fallback when the widget cannot load, set `HCAPTCHA_FAIL_OPEN=true`.
+- To use the review queue, set `ADMIN_TOKEN` and visit `/admin.html` on the deployed site.
+- For admin login (email + password), set `ADMIN_EMAIL` and either:
+  - `ADMIN_PASSWORD_HASH` + `ADMIN_PASSWORD_SALT` (recommended), or
+  - `ADMIN_PASSWORD` (dev only).
+- Use `node scripts/generate_admin_hash.mjs "your-password"` to generate a hash + salt.
 
 ## Data storage
 
