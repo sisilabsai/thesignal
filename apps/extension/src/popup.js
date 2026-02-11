@@ -23,10 +23,18 @@ const signBtn = document.getElementById('sign');
 const openIndexBtn = document.getElementById('open-index');
 const authorEl = document.getElementById('author');
 const optionsBtn = document.getElementById('open-options');
+const excerptCountEl = document.getElementById('excerpt-count');
 
 function setStatus(message, isError = false) {
   statusEl.textContent = message;
   statusEl.style.color = isError ? '#b00020' : '#444';
+}
+
+function updateExcerptCount() {
+  if (!excerptCountEl) return;
+  const length = (pageExcerptInput.value || '').length;
+  excerptCountEl.textContent = `${length}/2000`;
+  excerptCountEl.style.color = length > 2000 ? '#b00020' : '#666';
 }
 
 function getActiveTab() {
@@ -84,6 +92,7 @@ async function loadDefaults() {
   pageUrlInput.value = data.url || '';
   pageTitleInput.value = data.title || '';
   pageExcerptInput.value = data.excerpt || '';
+  updateExcerptCount();
 
   const profile = await getProfile();
   if (authorEl) {
@@ -157,6 +166,8 @@ async function signAndPublish() {
 signBtn.addEventListener('click', () => {
   signAndPublish().catch((err) => setStatus(err.message, true));
 });
+
+pageExcerptInput.addEventListener('input', updateExcerptCount);
 
 openIndexBtn.addEventListener('click', async () => {
   const apiBase = normalizeText(apiBaseInput.value || 'https://thesignal-rho.vercel.app');

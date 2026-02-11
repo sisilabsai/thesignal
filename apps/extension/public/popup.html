@@ -41,6 +41,13 @@
         min-height: 80px;
         resize: vertical;
       }
+      .count-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        margin-top: 6px;
+      }
       .row {
         display: flex;
         gap: 8px;
@@ -83,6 +90,71 @@
         font-size: 11px;
         color: #666;
       }
+      .small {
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+      .guide {
+        margin-top: 14px;
+        padding: 12px;
+        border-radius: 10px;
+        border: 1px solid #e6e0d5;
+        background: #fffaf2;
+      }
+      .guide-title {
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: #222;
+        margin-bottom: 8px;
+      }
+      .guide-steps {
+        margin: 0 0 10px;
+        padding-left: 18px;
+        font-size: 12px;
+        color: #4a4a4a;
+      }
+      .guide-steps li {
+        margin-bottom: 6px;
+      }
+      .example-label {
+        font-size: 11px;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 6px;
+      }
+      .example-list {
+        margin: 0 0 8px;
+        padding-left: 18px;
+        font-size: 12px;
+        color: #555;
+      }
+      .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      .chip {
+        font-size: 11px;
+        padding: 4px 8px;
+        border-radius: 999px;
+        background: #111;
+        color: #fff;
+      }
+      .guide-note {
+        margin-top: 8px;
+        font-size: 11px;
+        color: #7a3e00;
+      }
+      .guide-link {
+        display: inline-block;
+        margin-top: 6px;
+        font-size: 11px;
+        color: #0a4fff;
+        text-decoration: none;
+      }
       .link-button {
         border: none;
         background: none;
@@ -107,7 +179,36 @@
 
       <label>Excerpt</label>
       <textarea id="page-excerpt"></textarea>
-      <div class="muted">Tip: select text on the page before opening the extension.</div>
+      <div class="count-row">
+        <span class="muted">Tip: select text on the page before opening the extension.</span>
+        <span id="excerpt-count" class="muted small">0/2000</span>
+      </div>
+
+      <div class="guide">
+        <div class="guide-title">Quick Start</div>
+        <ol class="guide-steps">
+          <li>Open a public article, blog post, or documentation page.</li>
+          <li>Select 1-3 paragraphs that show original insight.</li>
+          <li>Open The Signal and click Sign + Publish.</li>
+        </ol>
+        <div class="example-label">Good excerpt examples</div>
+        <ul class="example-list">
+          <li>Original analysis or opinion from the author.</li>
+          <li>Step-by-step tutorial or code explanation.</li>
+          <li>Personal experience or field notes.</li>
+        </ul>
+        <div class="example-label">Try it on</div>
+        <div class="chips">
+          <span class="chip">Blogs</span>
+          <span class="chip">Research notes</span>
+          <span class="chip">Docs</span>
+          <span class="chip">Tutorials</span>
+        </div>
+        <div class="guide-note">Chrome, extension, and login pages cannot be accessed.</div>
+        <a class="guide-link" href="https://thesignal-rho.vercel.app/extension.html" target="_blank" rel="noreferrer">
+          Learn how to install and sign
+        </a>
+      </div>
 
       <label>Author</label>
       <div class="author-row">
