@@ -1,20 +1,30 @@
 const queryInput = document.getElementById('query');
 const searchBtn = document.getElementById('search-btn');
+const clearBtn = document.getElementById('clear-btn');
+const refreshBtn = document.getElementById('refresh-btn');
 const verifiedToggle = document.getElementById('filter-verified');
 const openToggle = document.getElementById('filter-open');
+const sortSelect = document.getElementById('sort-by');
+const viewSelect = document.getElementById('view-mode');
 const verifiedListEl = document.getElementById('verified-list');
 const openListEl = document.getElementById('open-list');
 const statusEl = document.getElementById('status');
 const statsEl = document.getElementById('stats');
+const statusLineEl = document.getElementById('status-line');
 const detailEl = document.getElementById('detail');
 const emptyStateEl = document.getElementById('empty-state');
-const resultsEl = document.querySelector('.results');
+const resultsEl = document.getElementById('results');
+const insightsEl = document.getElementById('insights');
 const copyApiBtn = document.getElementById('copy-api');
+const verifiedCountEl = document.getElementById('verified-count');
+const openCountEl = document.getElementById('open-count');
+const signalStatusEl = document.getElementById('signal-status');
 
 const params = new URLSearchParams(window.location.search);
 const currentId = params.get('id');
 
 const API_BASE = window.location.origin;
+const PREFS_KEY = 'signal:prefs:v1';
 
 function escapeHtml(value) {
   return String(value)
@@ -33,6 +43,26 @@ function formatDate(value) {
 function setStatus(message, isError = false) {
   statusEl.textContent = message;
   statusEl.style.color = isError ? '#b00020' : '#5f5b54';
+}
+
+function savePrefs() {
+  const prefs = {
+    query: queryInput.value.trim(),
+    verified: verifiedToggle.checked,
+    open: openToggle.checked,
+    sort: sortSelect.value,
+    view: viewSelect.value
+  };
+  localStorage.setItem(PREFS_KEY, JSON.stringify(prefs));
+}
+
+function loadPrefs() {
+  try {
+    const raw = localStorage.getItem(PREFS_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch {
+    return {};
+  }
 }
 
 async function fetchJson(url) {
@@ -69,6 +99,12 @@ function renderCard(item, type) {
     ? `<a class="title" href="${escapeHtml(item.url)}" target="_blank" rel="noreferrer">${escapeHtml(item.title)}</a>`
     : `<a class="title" href="?id=${item.id}">${escapeHtml(item.title)}</a>`;
 
+  const sourceLink = `
+    <div class="detail-actions">
+      <a class="btn ghost" href="${escapeHtml(item.url)}" target="_blank" rel="noreferrer">Open Source</a>
+    </div>
+  `;
+
   return `
     <article class="card">
       <div class="card-header">
@@ -82,6 +118,7 @@ function renderCard(item, type) {
         ${metaLine}
         ${fingerprint}
       </div>
+      ${sourceLink}
     </article>
   `;
 }
@@ -110,6 +147,10 @@ function renderDetail(record) {
       <div class="url">${escapeHtml(record.url)}</div>
       ${renderAuthor(author)}
       ${authorBio}
+      <div class="detail-actions">
+        <a class="btn ghost" href="${escapeHtml(record.url)}" target="_blank" rel="noreferrer">Open Source</a>
+        <button class="btn outline" id="copy-link">Copy Share Link</button>
+      </div>
       <p class="excerpt">${escapeHtml(record.excerpt)}</p>
       <div class="meta">
         <div>Signed: ${escapeHtml(formatDate(record.createdAt))}</div>
@@ -124,18 +165,45 @@ function renderDetail(record) {
       </div>
     </div>
   `;
+
+  const copyBtn = document.getElementById('copy-link');
+  copyBtn?.addEventListener('click', async () => {
+    const shareUrl = `${window.location.origin}/?id=${record.id}`;
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      copyBtn.textContent = 'Copied';
+      setTimeout(() => {
+        copyBtn.textContent = 'Copy Share Link';
+      }, 1500);
+    } catch {
+      window.prompt('Copy share link:', shareUrl);
+    }
+  });
 }
 
-async function loadVerified(query) {
+function applySort(items, sortBy) {
+  const sorted = items.slice();
+  if (sortBy === 'title') {
+    sorted.sort((a, b) => a.title.localeCompare(b.title));
+  } else if (sortBy === 'oldest') {
+    sorted.sort((a, b) => new Date(a.createdAt || 0) - new Date(b.createdAt || 0));
+  } else {
+    sorted.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+  }
+  return sorted;
+}
+
+async function loadVerified(query, sortBy) {
   try {
     const data = await fetchJson(`/api/signatures?query=${encodeURIComponent(query)}`);
-    return { items: data.items || [], total: data.total || 0 };
+    const items = applySort(data.items || [], sortBy);
+    return { items, total: data.total || items.length };
   } catch (err) {
     return { items: [], total: 0, error: err.message };
   }
 }
 
-async function loadOpenFeed(query) {
+async function loadOpenFeed(query, sortBy) {
   try {
     const data = await fetchJson('/seed.json');
     const allowlist = Array.isArray(data.allowlist) ? data.allowlist : [];
@@ -151,7 +219,8 @@ async function loadOpenFeed(query) {
       return haystack.includes(queryLower);
     });
 
-    return { items: filtered, total: filtered.length };
+    const items = applySort(filtered, sortBy);
+    return { items, total: items.length, generatedAt: data.generatedAt };
   } catch (err) {
     return { items: [], total: 0, error: err.message };
   }
@@ -174,16 +243,59 @@ function updateStats(verifiedTotal, openTotal) {
   `;
 }
 
+function updateInsights(verifiedItems, openItems) {
+  const topAuthors = new Map();
+  verifiedItems.forEach((item) => {
+    const author = item.author?.name || item.author?.handle;
+    if (!author) return;
+    topAuthors.set(author, (topAuthors.get(author) || 0) + 1);
+  });
+
+  const topAuthorList = Array.from(topAuthors.entries())
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 5)
+    .map(([name, count]) => `<li>${escapeHtml(name)} (${count})</li>`)
+    .join('');
+
+  const domains = [...new Set(openItems.map((item) => getDomain(item.url)).filter(Boolean))]
+    .slice(0, 5)
+    .map((domain) => `<li>${escapeHtml(domain)}</li>`)
+    .join('');
+
+  insightsEl.innerHTML = `
+    <div class="insight-card">
+      <div class="insight-title">Top authors</div>
+      <ul class="insight-list">${topAuthorList || '<li>No verified authors yet</li>'}</ul>
+    </div>
+    <div class="insight-card">
+      <div class="insight-title">Open feed sources</div>
+      <ul class="insight-list">${domains || '<li>No open feed sources yet</li>'}</ul>
+    </div>
+  `;
+}
+
+async function checkApiStatus() {
+  try {
+    await fetchJson('/api/health');
+    signalStatusEl.textContent = 'Live';
+    statusLineEl.textContent = 'API status: healthy';
+  } catch {
+    signalStatusEl.textContent = 'Degraded';
+    statusLineEl.textContent = 'API status: unavailable';
+  }
+}
+
 async function loadIndex() {
   const query = queryInput.value.trim();
   setStatus('Loading index...');
 
   const showVerified = verifiedToggle.checked;
   const showOpen = openToggle.checked;
+  const sortBy = sortSelect.value;
 
   const [verified, open] = await Promise.all([
-    showVerified ? loadVerified(query) : Promise.resolve({ items: [], total: 0 }),
-    showOpen ? loadOpenFeed(query) : Promise.resolve({ items: [], total: 0 })
+    showVerified ? loadVerified(query, sortBy) : Promise.resolve({ items: [], total: 0 }),
+    showOpen ? loadOpenFeed(query, sortBy) : Promise.resolve({ items: [], total: 0 })
   ]);
 
   if (verified.error) {
@@ -197,11 +309,20 @@ async function loadIndex() {
   renderList(verifiedListEl, verified.items, 'verified');
   renderList(openListEl, open.items, 'open');
   updateStats(verified.total, open.total);
+  updateInsights(verified.items, open.items);
+  verifiedCountEl.textContent = verified.total;
+  openCountEl.textContent = open.total;
 
   const hasAny = verified.items.length || open.items.length;
   emptyStateEl.classList.toggle('hidden', Boolean(hasAny));
   detailEl.classList.add('hidden');
   resultsEl.classList.remove('hidden');
+
+  if (open.generatedAt) {
+    statusLineEl.textContent = `Open feed updated: ${open.generatedAt}`;
+  }
+
+  savePrefs();
 }
 
 async function loadDetail(id) {
@@ -218,12 +339,26 @@ searchBtn.addEventListener('click', () => {
   loadIndex();
 });
 
+clearBtn.addEventListener('click', () => {
+  queryInput.value = '';
+  window.history.replaceState({}, '', '/');
+  loadIndex();
+});
+
+refreshBtn.addEventListener('click', loadIndex);
+
 queryInput.addEventListener('keydown', (event) => {
   if (event.key === 'Enter') searchBtn.click();
 });
 
 verifiedToggle.addEventListener('change', loadIndex);
 openToggle.addEventListener('change', loadIndex);
+sortSelect.addEventListener('change', loadIndex);
+viewSelect.addEventListener('change', () => {
+  resultsEl.classList.toggle('split', viewSelect.value === 'split');
+  resultsEl.classList.toggle('stack', viewSelect.value === 'stack');
+  savePrefs();
+});
 
 copyApiBtn?.addEventListener('click', async () => {
   const text = API_BASE;
@@ -237,6 +372,17 @@ copyApiBtn?.addEventListener('click', async () => {
     window.prompt('Copy API base:', text);
   }
 });
+
+const prefs = loadPrefs();
+if (prefs.query) queryInput.value = prefs.query;
+if (typeof prefs.verified === 'boolean') verifiedToggle.checked = prefs.verified;
+if (typeof prefs.open === 'boolean') openToggle.checked = prefs.open;
+if (prefs.sort) sortSelect.value = prefs.sort;
+if (prefs.view) viewSelect.value = prefs.view;
+resultsEl.classList.toggle('split', viewSelect.value === 'split');
+resultsEl.classList.toggle('stack', viewSelect.value === 'stack');
+
+checkApiStatus();
 
 if (currentId) {
   loadDetail(currentId);

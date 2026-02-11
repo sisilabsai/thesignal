@@ -7,7 +7,12 @@
     "kubernetes.io",
     "docs.kernel.org",
     "rust-lang.org",
-    "developer.mozilla.org"
+    "developer.mozilla.org",
+    "ietf.org",
+    "cloudflare.com",
+    "openai.com",
+    "nasa.gov",
+    "mit.edu"
   ],
   "blocklist": [],
   "items": [
@@ -59,6 +64,41 @@
       "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Overview",
       "excerpt": "A primer on how HTTP works across the web.",
       "source": "MDN"
+    },
+    {
+      "id": "open-8",
+      "title": "TLS 1.3 (RFC 8446)",
+      "url": "https://www.rfc-editor.org/rfc/rfc8446",
+      "excerpt": "The definitive specification for TLS 1.3, including handshake and record protocol updates.",
+      "source": "IETF RFC"
+    },
+    {
+      "id": "open-9",
+      "title": "IETF Datatracker",
+      "url": "https://datatracker.ietf.org/",
+      "excerpt": "Track IETF drafts, RFCs, and working group activity in real time.",
+      "source": "IETF"
+    },
+    {
+      "id": "open-10",
+      "title": "Cloudflare Learning Center",
+      "url": "https://www.cloudflare.com/learning/",
+      "excerpt": "Concise explanations of core internet infrastructure and security topics.",
+      "source": "Cloudflare"
+    },
+    {
+      "id": "open-11",
+      "title": "NASA Earthdata",
+      "url": "https://www.earthdata.nasa.gov/",
+      "excerpt": "Open access to Earth science data, tools, and research.",
+      "source": "NASA"
+    },
+    {
+      "id": "open-12",
+      "title": "MIT OpenCourseWare",
+      "url": "https://ocw.mit.edu/",
+      "excerpt": "Free course materials from MIT, covering science, engineering, and more.",
+      "source": "MIT"
     }
   ]
 }

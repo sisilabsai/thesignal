@@ -4,6 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>The Signal - Human Index</title>
+    <meta name="description" content="The Signal indexes human-authored content and highlights verified expertise." />
     <link rel="stylesheet" href="/styles.css" />
   </head>
   <body>
@@ -15,6 +16,7 @@
         </div>
         <nav class="nav">
           <a class="nav-link" href="/extension.html">Install Extension</a>
+          <a class="nav-link" href="#index">Index</a>
           <a class="nav-link" href="/api/health">API</a>
           <a class="nav-link" href="https://github.com/sisilabsai/thesignal" target="_blank" rel="noreferrer">GitHub</a>
         </nav>
@@ -31,15 +33,16 @@
               expertise, and build a web that rewards authentic voices.
             </p>
             <div class="hero-actions">
-              <a class="btn primary" href="/extension.html">Install the Extension</a>
+              <a class="btn primary" href="/extension.html">Install Extension</a>
               <button class="btn ghost" id="copy-api">Copy API Base</button>
             </div>
             <div class="hero-stats" id="stats"></div>
+            <div class="hero-footnote" id="status-line"></div>
           </div>
           <div class="hero-panel">
             <div class="signal-card">
               <div class="signal-label">Signal Status</div>
-              <div class="signal-value">Live</div>
+              <div class="signal-value" id="signal-status">Live</div>
               <div class="signal-meta">Self-attested, privacy-preserving signatures</div>
               <div class="signal-actions">
                 <a class="btn secondary" href="/extension.html">Start Signing</a>
@@ -49,10 +52,28 @@
             <div class="signal-card muted">
               <div class="signal-label">Open Feed</div>
               <div class="signal-meta">
-                Curated, unverified sources filtered by a domain allowlist.
+                Curated, unverified sources filtered by a domain allowlist. Always-on reading while
+                the verified index grows.
               </div>
               <div class="signal-meta">Update in <code>/public/seed.json</code>.</div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="trust">
+        <div class="container trust-grid">
+          <div class="trust-card">
+            <h3>Verified by signature</h3>
+            <p>Creators sign their work locally. The Signal verifies every signature before indexing.</p>
+          </div>
+          <div class="trust-card">
+            <h3>Readable provenance</h3>
+            <p>See author details, timestamps, and fingerprint metadata on every verified entry.</p>
+          </div>
+          <div class="trust-card">
+            <h3>Open by design</h3>
+            <p>Pair verified content with an open feed of trusted sources so readers always have signal.</p>
           </div>
         </div>
       </section>
@@ -99,22 +120,51 @@
             </div>
           </div>
 
-          <div class="search-bar">
-            <input id="query" type="search" placeholder="Search the index..." />
-            <button id="search-btn" class="btn primary">Search</button>
+          <div class="controls">
+            <div class="search-bar">
+              <input id="query" type="search" placeholder="Search the index..." />
+              <button id="search-btn" class="btn primary">Search</button>
+              <button id="clear-btn" class="btn ghost">Clear</button>
+            </div>
+            <div class="control-row">
+              <div class="control-group">
+                <label class="control-label">Sort</label>
+                <select id="sort-by">
+                  <option value="recent">Most recent</option>
+                  <option value="oldest">Oldest</option>
+                  <option value="title">Title A-Z</option>
+                </select>
+              </div>
+              <div class="control-group">
+                <label class="control-label">View</label>
+                <select id="view-mode">
+                  <option value="split">Split</option>
+                  <option value="stack">Stacked</option>
+                </select>
+              </div>
+              <button id="refresh-btn" class="btn outline">Refresh</button>
+            </div>
           </div>
 
-          <div id="status" class="status"></div>
+          <div class="status" id="status"></div>
 
           <section id="detail" class="detail hidden"></section>
 
-          <section class="results">
+          <section class="insights" id="insights"></section>
+
+          <section class="results split" id="results">
             <div class="results-block">
-              <h3>Verified</h3>
+              <div class="results-header">
+                <h3>Verified</h3>
+                <span class="count" id="verified-count">0</span>
+              </div>
               <div id="verified-list" class="list"></div>
             </div>
             <div class="results-block">
-              <h3>Open Feed</h3>
+              <div class="results-header">
+                <h3>Open Feed</h3>
+                <span class="count" id="open-count">0</span>
+              </div>
               <div id="open-list" class="list"></div>
             </div>
           </section>
@@ -123,6 +173,30 @@
             <h3>No verified results yet.</h3>
             <p>Install the extension and publish your first signal to populate the index.</p>
             <a class="btn secondary" href="/extension.html">Install Extension</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="faq">
+        <div class="container">
+          <h2>FAQ</h2>
+          <div class="faq-grid">
+            <details>
+              <summary>Is the verified index private or public?</summary>
+              <p>Public. Anyone can search and explore signed entries.</p>
+            </details>
+            <details>
+              <summary>Does the extension prove identity?</summary>
+              <p>No. The MVP uses self-attestation. Identity proofs are planned later.</p>
+            </details>
+            <details>
+              <summary>Why do some sites show as blocked?</summary>
+              <p>Chrome and login pages restrict extensions. Use a normal public page instead.</p>
+            </details>
+            <details>
+              <summary>How do I add to the open feed?</summary>
+              <p>Edit <code>/public/seed.json</code> to add or remove sources.</p>
+            </details>
           </div>
         </div>
       </section>
@@ -136,6 +210,7 @@
         </div>
         <div class="footer-links">
           <a href="/extension.html">Install Extension</a>
+          <a href="#index">Index</a>
           <a href="/api/health">API</a>
           <a href="https://github.com/sisilabsai/thesignal" target="_blank" rel="noreferrer">GitHub</a>
         </div>
