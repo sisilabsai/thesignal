@@ -1,0 +1,64 @@
+{
+  "generatedAt": "2026-02-11",
+  "allowlist": [
+    "rfc-editor.org",
+    "w3.org",
+    "whatwg.org",
+    "kubernetes.io",
+    "docs.kernel.org",
+    "rust-lang.org",
+    "developer.mozilla.org"
+  ],
+  "blocklist": [],
+  "items": [
+    {
+      "id": "open-1",
+      "title": "HTTP Semantics (RFC 9110)",
+      "url": "https://www.rfc-editor.org/rfc/rfc9110",
+      "excerpt": "The core HTTP semantics and standard behaviors used by modern web clients and servers.",
+      "source": "IETF RFC"
+    },
+    {
+      "id": "open-2",
+      "title": "HTML Living Standard",
+      "url": "https://html.spec.whatwg.org/",
+      "excerpt": "The authoritative specification for HTML maintained by the WHATWG.",
+      "source": "WHATWG"
+    },
+    {
+      "id": "open-3",
+      "title": "Web Content Accessibility Guidelines (WCAG) 2.2",
+      "url": "https://www.w3.org/TR/WCAG22/",
+      "excerpt": "Accessibility guidelines for making web content more usable for everyone.",
+      "source": "W3C"
+    },
+    {
+      "id": "open-4",
+      "title": "Kubernetes Concepts Overview",
+      "url": "https://kubernetes.io/docs/concepts/overview/",
+      "excerpt": "Core concepts for running distributed systems on Kubernetes.",
+      "source": "Kubernetes"
+    },
+    {
+      "id": "open-5",
+      "title": "Linux Kernel Documentation - Process",
+      "url": "https://docs.kernel.org/process/",
+      "excerpt": "Kernel development process and community norms.",
+      "source": "Linux Kernel Docs"
+    },
+    {
+      "id": "open-6",
+      "title": "The Rust Programming Language",
+      "url": "https://doc.rust-lang.org/book/",
+      "excerpt": "The official Rust book covering fundamentals and best practices.",
+      "source": "Rust Project"
+    },
+    {
+      "id": "open-7",
+      "title": "MDN HTTP Overview",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Overview",
+      "excerpt": "A primer on how HTTP works across the web.",
+      "source": "MDN"
+    }
+  ]
+}

@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>The Signal Extension</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container header-inner">
+        <div class="brand-wrap">
+          <span class="brand">The Signal</span>
+          <span class="pill">Extension</span>
+        </div>
+        <nav class="nav">
+          <a class="nav-link" href="/">Index</a>
+          <a class="nav-link" href="https://github.com/sisilabsai/thesignal" target="_blank" rel="noreferrer">GitHub</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="container" style="padding: 40px 24px 64px;">
+      <section class="signal-card">
+        <h1>Install the Extension</h1>
+        <p class="hero-lede">Use the extension to sign human-authored content and publish to The Signal index.</p>
+        <div class="hero-actions">
+          <a class="btn primary" href="https://github.com/sisilabsai/thesignal" target="_blank" rel="noreferrer">Open GitHub Repo</a>
+          <a class="btn ghost" href="/">Return to Index</a>
+        </div>
+      </section>
+
+      <section class="how" style="padding: 28px 0 0;">
+        <div class="how-grid">
+          <div class="how-card">
+            <div class="how-step">1</div>
+            <h3>Build the extension</h3>
+            <p>Run <code>npm run build:extension</code> to generate <code>apps/extension/dist</code>.</p>
+          </div>
+          <div class="how-card">
+            <div class="how-step">2</div>
+            <h3>Load it in Chrome</h3>
+            <p>Go to <code>chrome://extensions</code>, enable Developer Mode, click Load unpacked.</p>
+          </div>
+          <div class="how-card">
+            <div class="how-step">3</div>
+            <h3>Point to live API</h3>
+            <p>Open the extension Options and set API Base to <code>https://thesignal-rho.vercel.app</code>.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="signal-card" style="margin-top: 20px;">
+        <h2>Coming soon</h2>
+        <p class="muted">Chrome Web Store listing and automatic updates.</p>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-inner">
+        <div>
+          <div class="brand">The Signal</div>
+          <div class="muted">Restoring the human premium to the web.</div>
+        </div>
+        <div class="footer-links">
+          <a href="/">Index</a>
+          <a href="/api/health">API</a>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

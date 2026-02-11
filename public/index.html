@@ -3,30 +3,143 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>The Signal - Public Index</title>
+    <title>The Signal - Human Index</title>
     <link rel="stylesheet" href="/styles.css" />
   </head>
   <body>
     <header class="site-header">
-      <div class="container">
-        <div class="brand">The Signal</div>
-        <div class="tagline">Public index of verified human-authored content (self-attested)</div>
+      <div class="container header-inner">
+        <div class="brand-wrap">
+          <span class="brand">The Signal</span>
+          <span class="pill">Human Index</span>
+        </div>
+        <nav class="nav">
+          <a class="nav-link" href="/extension.html">Install Extension</a>
+          <a class="nav-link" href="/api/health">API</a>
+          <a class="nav-link" href="https://github.com/sisilabsai/thesignal" target="_blank" rel="noreferrer">GitHub</a>
+        </nav>
       </div>
     </header>
 
-    <main class="container">
-      <section class="search">
-        <input id="query" type="search" placeholder="Search verified content..." />
-        <button id="search-btn">Search</button>
+    <main>
+      <section class="hero">
+        <div class="container hero-grid">
+          <div class="hero-copy">
+            <h1>Find the humans again.</h1>
+            <p class="hero-lede">
+              The Signal is a public index of human-authored content. Sign your work, surface real
+              expertise, and build a web that rewards authentic voices.
+            </p>
+            <div class="hero-actions">
+              <a class="btn primary" href="/extension.html">Install the Extension</a>
+              <button class="btn ghost" id="copy-api">Copy API Base</button>
+            </div>
+            <div class="hero-stats" id="stats"></div>
+          </div>
+          <div class="hero-panel">
+            <div class="signal-card">
+              <div class="signal-label">Signal Status</div>
+              <div class="signal-value">Live</div>
+              <div class="signal-meta">Self-attested, privacy-preserving signatures</div>
+              <div class="signal-actions">
+                <a class="btn secondary" href="/extension.html">Start Signing</a>
+                <a class="btn outline" href="#index">Explore Index</a>
+              </div>
+            </div>
+            <div class="signal-card muted">
+              <div class="signal-label">Open Feed</div>
+              <div class="signal-meta">
+                Curated, unverified sources filtered by a domain allowlist.
+              </div>
+              <div class="signal-meta">Update in <code>/public/seed.json</code>.</div>
+            </div>
+          </div>
+        </div>
       </section>
 
-      <section id="detail" class="detail hidden"></section>
+      <section class="how" id="how">
+        <div class="container">
+          <h2>How it works</h2>
+          <div class="how-grid">
+            <div class="how-card">
+              <div class="how-step">1</div>
+              <h3>Sign at creation</h3>
+              <p>Use the extension to sign a page or excerpt with your local key.</p>
+            </div>
+            <div class="how-card">
+              <div class="how-step">2</div>
+              <h3>Publish to the index</h3>
+              <p>The Signal verifies the signature and stores the record.</p>
+            </div>
+            <div class="how-card">
+              <div class="how-step">3</div>
+              <h3>Search and share</h3>
+              <p>Readers can search verified work and follow trusted authors.</p>
+            </div>
+          </div>
+        </div>
+      </section>
 
-      <section id="list" class="list"></section>
+      <section class="index" id="index">
+        <div class="container">
+          <div class="index-header">
+            <div>
+              <h2>Public Index</h2>
+              <p class="muted">Verified entries appear first. Open feed is curated and unverified.</p>
+            </div>
+            <div class="filters">
+              <label class="toggle">
+                <input id="filter-verified" type="checkbox" checked />
+                <span>Verified</span>
+              </label>
+              <label class="toggle">
+                <input id="filter-open" type="checkbox" checked />
+                <span>Open Feed</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="search-bar">
+            <input id="query" type="search" placeholder="Search the index..." />
+            <button id="search-btn" class="btn primary">Search</button>
+          </div>
+
+          <div id="status" class="status"></div>
+
+          <section id="detail" class="detail hidden"></section>
+
+          <section class="results">
+            <div class="results-block">
+              <h3>Verified</h3>
+              <div id="verified-list" class="list"></div>
+            </div>
+            <div class="results-block">
+              <h3>Open Feed</h3>
+              <div id="open-list" class="list"></div>
+            </div>
+          </section>
+
+          <div id="empty-state" class="empty hidden">
+            <h3>No verified results yet.</h3>
+            <p>Install the extension and publish your first signal to populate the index.</p>
+            <a class="btn secondary" href="/extension.html">Install Extension</a>
+          </div>
+        </div>
+      </section>
     </main>
 
     <footer class="site-footer">
-      <div class="container">Built with The Signal MVP</div>
+      <div class="container footer-inner">
+        <div>
+          <div class="brand">The Signal</div>
+          <div class="muted">Restoring the human premium to the web.</div>
+        </div>
+        <div class="footer-links">
+          <a href="/extension.html">Install Extension</a>
+          <a href="/api/health">API</a>
+          <a href="https://github.com/sisilabsai/thesignal" target="_blank" rel="noreferrer">GitHub</a>
+        </div>
+      </div>
     </footer>
 
     <script src="/app.js"></script>
