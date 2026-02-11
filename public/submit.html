@@ -22,37 +22,73 @@
     </header>
 
     <main class="container" style="padding: 40px 24px 64px;">
-      <section class="profile-card">
-        <h1>Submit a publication or source</h1>
-        <p class="hero-lede">Recommend trusted sources for the open feed or verification review.</p>
-        <form id="submit-form" class="form-grid">
-          <div class="form-field">
-            <label for="name">Publication name</label>
-            <input class="form-input" id="name" type="text" placeholder="Example Research Lab" required />
+      <section class="submit-layout">
+        <div class="profile-card">
+          <div class="tag">Publisher submission</div>
+          <h1>Submit a publication or source</h1>
+          <p class="hero-lede">Recommend trusted sources for the open feed or verification review.</p>
+          <div class="submit-steps">
+            <div>
+              <strong>1.</strong> Share the main site URL
+            </div>
+            <div>
+              <strong>2.</strong> Pick categories that match the content
+            </div>
+            <div>
+              <strong>3.</strong> Add a sample article for review
+            </div>
           </div>
-          <div class="form-field">
-            <label for="url">Website URL</label>
-            <input class="form-input" id="url" type="url" placeholder="https://example.com" required />
-          </div>
-          <div class="form-field">
-            <label for="contact">Contact email</label>
-            <input class="form-input" id="contact" type="email" placeholder="editor@example.com" required />
-          </div>
-          <div class="form-field">
-            <label for="sample">Sample article URL</label>
-            <input class="form-input" id="sample" type="url" placeholder="https://example.com/article" />
-          </div>
-          <div class="form-field">
-            <label for="category">Category</label>
-            <input class="form-input" id="category" type="text" placeholder="Tech, Research, Policy" />
-          </div>
-          <div class="form-field">
-            <label for="notes">Notes</label>
-            <textarea class="form-input" id="notes" rows="4" placeholder="Why this source matters"></textarea>
-          </div>
-          <button class="btn secondary" type="submit">Submit</button>
-          <div class="alert-status" id="submit-status"></div>
-        </form>
+
+          <form id="submit-form" class="form-grid">
+            <div class="form-field">
+              <label for="name">Publication name</label>
+              <input class="form-input" id="name" type="text" placeholder="Example Research Lab" required />
+            </div>
+
+            <div class="form-field">
+              <label for="url">Website URL</label>
+              <div class="inline-row">
+                <input class="form-input" id="url" type="url" placeholder="https://example.com" required />
+                <button class="btn ghost" id="scan-btn" type="button">Scan site</button>
+              </div>
+              <div class="helper-text">We will scan public links to suggest sample URLs.</div>
+            </div>
+
+            <div class="form-field">
+              <label for="contact">Contact email</label>
+              <input class="form-input" id="contact" type="email" placeholder="editor@example.com" required />
+            </div>
+
+            <div class="form-field">
+              <label>Category</label>
+              <div class="chip-grid" id="category-chips"></div>
+              <input class="form-input" id="category-other" type="text" placeholder="Other categories (comma-separated)" />
+              <input id="category" type="hidden" />
+            </div>
+
+            <div class="form-field">
+              <label for="sample">Sample article URL</label>
+              <input class="form-input" id="sample" type="url" placeholder="https://example.com/article" />
+            </div>
+
+            <div class="form-field">
+              <label for="notes">Notes</label>
+              <textarea class="form-input" id="notes" rows="4" placeholder="Why this source matters"></textarea>
+            </div>
+
+            <button class="btn secondary" type="submit">Submit</button>
+            <div class="alert-status" id="submit-status"></div>
+          </form>
+        </div>
+
+        <div class="profile-card">
+          <h2>Suggested links</h2>
+          <p class="muted">We scan the site to suggest sample URLs and categories.</p>
+          <div class="scan-status" id="scan-status">Enter a URL to start scanning.</div>
+          <div class="site-summary" id="site-summary"></div>
+          <ul class="suggestion-list" id="link-suggestions"></ul>
+          <div class="empty hidden" id="suggestion-empty">No suggestions yet.</div>
+        </div>
       </section>
     </main>
 
