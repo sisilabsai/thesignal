@@ -1,0 +1,8 @@
+node_modules/
+dist/
+apps/extension/dist/
+apps/extension/.cache/
+apps/web/dist/
+data/signatures.json
+.env
+.DS_Store

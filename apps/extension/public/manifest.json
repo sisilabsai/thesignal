@@ -1,0 +1,23 @@
+{
+  "manifest_version": 3,
+  "name": "The Signal Signer",
+  "version": "0.1.0",
+  "description": "Sign and publish human-authored content to The Signal public index.",
+  "action": {
+    "default_title": "The Signal",
+    "default_popup": "popup.html"
+  },
+  "permissions": ["storage", "activeTab", "clipboardWrite"],
+  "host_permissions": ["<all_urls>"],
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": true
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}
