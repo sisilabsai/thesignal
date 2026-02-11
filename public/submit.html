@@ -40,6 +40,10 @@
           </div>
 
           <form id="submit-form" class="form-grid">
+            <div class="honeypot">
+              <label for="company">Company (leave blank)</label>
+              <input class="form-input" id="company" type="text" autocomplete="off" />
+            </div>
             <div class="form-field">
               <label for="name">Publication name</label>
               <input class="form-input" id="name" type="text" placeholder="Example Research Lab" required />
@@ -72,6 +76,13 @@
             </div>
 
             <div class="form-field">
+              <label>Captcha</label>
+              <div id="captcha-container" class="captcha-box">
+                <div class="muted">Captcha will appear here if enabled.</div>
+              </div>
+            </div>
+
+            <div class="form-field">
               <label for="notes">Notes</label>
               <textarea class="form-input" id="notes" rows="4" placeholder="Why this source matters"></textarea>
             </div>
@@ -88,6 +99,11 @@
           <div class="site-summary" id="site-summary"></div>
           <ul class="suggestion-list" id="link-suggestions"></ul>
           <div class="empty hidden" id="suggestion-empty">No suggestions yet.</div>
+          <div class="preview-card" id="preview-card">
+            <div class="preview-label">Sample preview</div>
+            <div class="preview-title" id="preview-title">No sample selected.</div>
+            <div class="preview-desc" id="preview-desc"></div>
+          </div>
         </div>
       </section>
     </main>

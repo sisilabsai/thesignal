@@ -11,6 +11,10 @@ const scanStatusEl = document.getElementById('scan-status');
 const siteSummaryEl = document.getElementById('site-summary');
 const suggestionListEl = document.getElementById('link-suggestions');
 const suggestionEmptyEl = document.getElementById('suggestion-empty');
+const previewTitleEl = document.getElementById('preview-title');
+const previewDescEl = document.getElementById('preview-desc');
+const captchaContainer = document.getElementById('captcha-container');
+const honeypotInput = document.getElementById('company');
 
 const CATEGORY_OPTIONS = [
   'Research',
@@ -29,6 +33,9 @@ const CATEGORY_OPTIONS = [
 
 const selectedCategories = new Set();
 let scanTimeout = null;
+let previewTimeout = null;
+let startedAt = new Date().toISOString();
+let captchaEnabled = false;
 
 function setStatus(message, isError = false) {
   statusEl.textContent = message;
@@ -38,6 +45,11 @@ function setStatus(message, isError = false) {
 function setScanStatus(message, isError = false) {
   scanStatusEl.textContent = message;
   scanStatusEl.style.color = isError ? '#b00020' : '#5f5b54';
+}
+
+function setPreview(title, description) {
+  previewTitleEl.textContent = title || 'No sample selected.';
+  previewDescEl.textContent = description || '';
 }
 
 function normalizeCategory(value) {
@@ -123,6 +135,7 @@ function renderSuggestions(data) {
     item.querySelector('button')?.addEventListener('click', () => {
       sampleInput.value = link.url;
       setScanStatus('Sample URL filled in.');
+      previewSample(link.url);
     });
     suggestionListEl.appendChild(item);
   });
@@ -172,6 +185,47 @@ async function scanSite() {
   }
 }
 
+async function previewSample(url) {
+  if (!url) {
+    setPreview('No sample selected.', '');
+    return;
+  }
+
+  try {
+    const data = await fetchJson(`/api/preview?url=${encodeURIComponent(url)}`);
+    setPreview(data.title || 'Sample preview', data.description || 'No description found.');
+    if (!nameInput.value && data.title) {
+      nameInput.value = data.title;
+    }
+  } catch (err) {
+    setPreview('Preview unavailable', err.message);
+  }
+}
+
+async function loadCaptcha() {
+  try {
+    const res = await fetch('/config.json');
+    if (!res.ok) return;
+    const config = await res.json();
+    if (!config.hcaptchaSiteKey) return;
+
+    captchaEnabled = true;
+    const script = document.createElement('script');
+    script.src = 'https://js.hcaptcha.com/1/api.js';
+    script.async = true;
+    script.defer = true;
+    document.head.appendChild(script);
+
+    const widget = document.createElement('div');
+    widget.className = 'h-captcha';
+    widget.dataset.sitekey = config.hcaptchaSiteKey;
+    captchaContainer.innerHTML = '';
+    captchaContainer.appendChild(widget);
+  } catch {
+    // ignore
+  }
+}
+
 async function submitForm(event) {
   event.preventDefault();
   updateCategoryValue();
@@ -182,8 +236,19 @@ async function submitForm(event) {
     contactEmail: document.getElementById('contact').value.trim(),
     sampleUrl: sampleInput.value.trim(),
     category: categoryInput.value.trim(),
-    notes: document.getElementById('notes').value.trim()
+    notes: document.getElementById('notes').value.trim(),
+    company: honeypotInput.value.trim(),
+    startedAt
   };
+
+  if (captchaEnabled) {
+    const token = window.hcaptcha?.getResponse?.() || '';
+    if (!token) {
+      setStatus('Please complete the captcha.', true);
+      return;
+    }
+    payload.captchaToken = token;
+  }
 
   if (!payload.name || !payload.url || !payload.contactEmail) {
     setStatus('Name, URL, and contact email are required.', true);
@@ -202,6 +267,9 @@ async function submitForm(event) {
     selectedCategories.clear();
     renderChips();
     clearSuggestions();
+    setPreview('No sample selected.', '');
+    startedAt = new Date().toISOString();
+    if (captchaEnabled) window.hcaptcha?.reset?.();
   } catch (err) {
     setStatus(`Submission failed: ${err.message}`, true);
   }
@@ -210,6 +278,8 @@ async function submitForm(event) {
 renderChips();
 updateCategoryValue();
 clearSuggestions();
+setPreview('No sample selected.', '');
+loadCaptcha();
 
 form?.addEventListener('submit', submitForm);
 scanBtn?.addEventListener('click', scanSite);
@@ -219,4 +289,13 @@ urlInput?.addEventListener('input', () => {
     scanSite();
   }, 900);
 });
+
+sampleInput?.addEventListener('input', () => {
+  if (previewTimeout) clearTimeout(previewTimeout);
+  const sampleUrl = sampleInput.value.trim();
+  previewTimeout = setTimeout(() => {
+    previewSample(sampleUrl);
+  }, 800);
+});
+
 categoryOtherInput?.addEventListener('input', updateCategoryValue);

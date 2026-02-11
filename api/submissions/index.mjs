@@ -4,10 +4,12 @@ import { checkRateLimit, RATE_LIMIT } from '../_lib/rateLimit.mjs';
 import { parseJsonBody, getClientKey, sendJson, isValidUrl, normalizeAuthorField } from '../_lib/utils.mjs';
 import { addSubmission } from '../_lib/store.mjs';
 import { sendMail, mailConfigured } from '../_lib/mailer.mjs';
+import { captchaRequired, verifyCaptcha } from '../_lib/captcha.mjs';
 
 function validateSubmission(payload) {
   const errors = [];
   if (!payload || typeof payload !== 'object') errors.push('Payload must be an object');
+  if (payload.company) errors.push('Spam detected');
   if (!payload.name || payload.name.length > 120) errors.push('Invalid name');
   if (!payload.url || !isValidUrl(payload.url)) errors.push('Invalid url');
   if (!payload.contactEmail || !payload.contactEmail.includes('@')) errors.push('Invalid contact email');
@@ -43,6 +45,25 @@ export default async function handler(req, res) {
   if (errors.length) {
     sendJson(res, 400, { error: 'Validation failed', details: errors });
     return;
+  }
+
+  if (payload.startedAt) {
+    const startedAt = new Date(payload.startedAt);
+    if (!Number.isNaN(startedAt.getTime())) {
+      const elapsed = Date.now() - startedAt.getTime();
+      if (elapsed < 3000) {
+        sendJson(res, 400, { error: 'Form submitted too quickly' });
+        return;
+      }
+    }
+  }
+
+  if (captchaRequired()) {
+    const captcha = await verifyCaptcha(payload.captchaToken, getClientKey(req));
+    if (!captcha.ok) {
+      sendJson(res, 400, { error: captcha.error || 'Captcha failed' });
+      return;
+    }
   }
 
   const submission = {

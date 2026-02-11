@@ -168,6 +168,9 @@ https://thesignal-rho.vercel.app
   - `SMTP_PASS`
 - `SMTP_FROM`
 - Optional: `SUBMISSIONS_NOTIFY`
+- Captcha (optional)
+  - `HCAPTCHA_SECRET`
+  - Update `public/config.json` with `hcaptchaSiteKey`
 
 ## Alert scheduler
 

@@ -30,6 +30,17 @@ const currentId = params.get('id');
 
 const API_BASE = window.location.origin;
 const PREFS_KEY = 'signal:prefs:v1';
+let seedConfig = null;
+
+async function ensureSeedConfig() {
+  if (seedConfig) return seedConfig;
+  try {
+    seedConfig = await fetchJson('/seed.json');
+  } catch {
+    seedConfig = null;
+  }
+  return seedConfig;
+}
 
 function escapeHtml(value) {
   return String(value)
@@ -93,6 +104,12 @@ function getDomain(url) {
   }
 }
 
+function isTrustedDomain(url, trustedDomains = []) {
+  const domain = getDomain(url);
+  if (!domain || !trustedDomains.length) return false;
+  return trustedDomains.some((trusted) => domain === trusted || domain.endsWith(`.${trusted}`));
+}
+
 function renderAuthor(author, fingerprint) {
   if (!author) return '';
   const displayName = author.name || author.handle || 'Unknown';
@@ -107,6 +124,7 @@ function renderAuthor(author, fingerprint) {
 function renderCard(item, type) {
   const label = type === 'open' ? 'Open Feed' : 'Verified';
   const labelClass = type === 'open' ? 'label open' : 'label';
+  const trustedBadge = item.trusted ? '<span class="badge trusted">Trusted</span>' : '';
   const metaLine = type === 'open'
     ? `<span>Source: ${escapeHtml(item.source || getDomain(item.url))}</span>`
     : `<span>Signed: ${escapeHtml(formatDate(item.createdAt))}</span>`;
@@ -127,6 +145,7 @@ function renderCard(item, type) {
       <div class="card-header">
         ${titleLink}
         <span class="${labelClass}">${label}</span>
+        ${trustedBadge}
       </div>
       <div class="url">${escapeHtml(item.url)}</div>
       ${type === 'open' ? '' : renderAuthor(item.author, item.fingerprint)}
@@ -159,6 +178,10 @@ function renderDetail(record) {
   const authorLink = record.fingerprint
     ? `<a class="btn ghost" href="/author.html?fingerprint=${encodeURIComponent(record.fingerprint)}">View Author Profile</a>`
     : '';
+  const trustedDomains = seedConfig?.trustedDomains || seedConfig?.allowlist || [];
+  const trustedBadge = isTrustedDomain(record.url, trustedDomains)
+    ? '<span class="badge trusted">Trusted source</span>'
+    : '';
 
   detailEl.innerHTML = `
     <div class="detail-card">
@@ -172,6 +195,7 @@ function renderDetail(record) {
         ${authorLink}
         <button class="btn outline" id="copy-link">Copy Share Link</button>
       </div>
+      ${trustedBadge}
       <p class="excerpt">${escapeHtml(record.excerpt)}</p>
       <div class="meta">
         <div>Signed: ${escapeHtml(formatDate(record.createdAt))}</div>
@@ -227,6 +251,7 @@ async function loadVerified(query, sortBy) {
 async function loadOpenFeed(query, sortBy) {
   try {
     const data = await fetchJson('/seed.json');
+    seedConfig = data;
     const allowlist = Array.isArray(data.allowlist) ? data.allowlist : [];
     const blocklist = Array.isArray(data.blocklist) ? data.blocklist : [];
     const queryLower = query.toLowerCase();
@@ -241,7 +266,14 @@ async function loadOpenFeed(query, sortBy) {
     });
 
     const items = applySort(filtered, sortBy);
-    return { items, total: items.length, generatedAt: data.generatedAt };
+    return {
+      items: items.map((item) => ({
+        ...item,
+        trusted: Boolean(item.trusted)
+      })),
+      total: items.length,
+      generatedAt: data.generatedAt
+    };
   } catch (err) {
     return { items: [], total: 0, error: err.message };
   }
@@ -355,10 +387,19 @@ async function loadIndex() {
     setStatus('');
   }
 
-  renderList(verifiedListEl, verified.items, 'verified');
+  if (!seedConfig) {
+    await ensureSeedConfig();
+  }
+  const trustedDomains = seedConfig?.trustedDomains || seedConfig?.allowlist || [];
+  const verifiedItems = verified.items.map((item) => ({
+    ...item,
+    trusted: isTrustedDomain(item.url, trustedDomains)
+  }));
+
+  renderList(verifiedListEl, verifiedItems, 'verified');
   renderList(openListEl, open.items, 'open');
   updateStats(verified.total, open.total);
-  updateInsights(verified.items, open.items);
+  updateInsights(verifiedItems, open.items);
   verifiedCountEl.textContent = verified.total;
   openCountEl.textContent = open.total;
 

@@ -37,6 +37,7 @@ This repo contains the first MVP for The Signal:
   - `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM`
   - Optional: `SUBMISSIONS_NOTIFY` (where submission emails are sent)
 - To send alerts, schedule a cron to POST `/api/alerts/run` (Vercel Cron or external scheduler).
+- For captcha on submissions, set `HCAPTCHA_SECRET` and update `public/config.json` with your `hcaptchaSiteKey`.
 
 ## Data storage
 

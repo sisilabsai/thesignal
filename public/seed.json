@@ -14,6 +14,14 @@
     "nasa.gov",
     "mit.edu"
   ],
+  "trustedDomains": [
+    "rfc-editor.org",
+    "w3.org",
+    "whatwg.org",
+    "ietf.org",
+    "nasa.gov",
+    "mit.edu"
+  ],
   "blocklist": [],
   "items": [
     {
@@ -21,21 +29,24 @@
       "title": "HTTP Semantics (RFC 9110)",
       "url": "https://www.rfc-editor.org/rfc/rfc9110",
       "excerpt": "The core HTTP semantics and standard behaviors used by modern web clients and servers.",
-      "source": "IETF RFC"
+      "source": "IETF RFC",
+      "trusted": true
     },
     {
       "id": "open-2",
       "title": "HTML Living Standard",
       "url": "https://html.spec.whatwg.org/",
       "excerpt": "The authoritative specification for HTML maintained by the WHATWG.",
-      "source": "WHATWG"
+      "source": "WHATWG",
+      "trusted": true
     },
     {
       "id": "open-3",
       "title": "Web Content Accessibility Guidelines (WCAG) 2.2",
       "url": "https://www.w3.org/TR/WCAG22/",
       "excerpt": "Accessibility guidelines for making web content more usable for everyone.",
-      "source": "W3C"
+      "source": "W3C",
+      "trusted": true
     },
     {
       "id": "open-4",
@@ -70,14 +81,16 @@
       "title": "TLS 1.3 (RFC 8446)",
       "url": "https://www.rfc-editor.org/rfc/rfc8446",
       "excerpt": "The definitive specification for TLS 1.3, including handshake and record protocol updates.",
-      "source": "IETF RFC"
+      "source": "IETF RFC",
+      "trusted": true
     },
     {
       "id": "open-9",
       "title": "IETF Datatracker",
       "url": "https://datatracker.ietf.org/",
       "excerpt": "Track IETF drafts, RFCs, and working group activity in real time.",
-      "source": "IETF"
+      "source": "IETF",
+      "trusted": true
     },
     {
       "id": "open-10",
@@ -91,14 +104,16 @@
       "title": "NASA Earthdata",
       "url": "https://www.earthdata.nasa.gov/",
       "excerpt": "Open access to Earth science data, tools, and research.",
-      "source": "NASA"
+      "source": "NASA",
+      "trusted": true
     },
     {
       "id": "open-12",
       "title": "MIT OpenCourseWare",
       "url": "https://ocw.mit.edu/",
       "excerpt": "Free course materials from MIT, covering science, engineering, and more.",
-      "source": "MIT"
+      "source": "MIT",
+      "trusted": true
     }
   ]
 }
