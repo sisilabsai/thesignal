@@ -132,7 +132,7 @@ export default async function handler(req, res) {
   const publicKeyBytes = base64ToBytes(payload.publicKey);
   const signatureBytes = base64ToBytes(payload.signature);
 
-  const isValid = await ed.verify(signatureBytes, messageBytesValue, publicKeyBytes);
+  const isValid = await ed.verifyAsync(signatureBytes, messageBytesValue, publicKeyBytes);
   if (!isValid) {
     sendJson(res, 400, { error: 'Invalid signature' });
     return;

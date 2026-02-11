@@ -34,7 +34,7 @@ export async function ensureKeys() {
   if (stored.privateKey && stored.publicKey) return stored;
 
   const privateKey = ed.utils.randomPrivateKey();
-  const publicKey = await ed.getPublicKey(privateKey);
+  const publicKey = await ed.getPublicKeyAsync(privateKey);
   const encoded = {
     privateKey: bytesToBase64(privateKey),
     publicKey: bytesToBase64(publicKey)

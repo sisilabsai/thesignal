@@ -136,7 +136,7 @@ async function signAndPublish() {
   };
 
   const keys = await ensureKeys();
-  const signatureBytes = await ed.sign(messageBytes(payload), decodePrivateKey(keys.privateKey));
+  const signatureBytes = await ed.signAsync(messageBytes(payload), decodePrivateKey(keys.privateKey));
   const signature = bytesToBase64(signatureBytes);
 
   const response = await fetch(`${apiBase}/api/signatures`, {

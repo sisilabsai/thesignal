@@ -223,7 +223,7 @@ fastify.post('/api/signatures', async (request, reply) => {
   const publicKeyBytes = base64ToBytes(payload.publicKey);
   const signatureBytes = base64ToBytes(payload.signature);
 
-  const isValid = await ed.verify(signatureBytes, messageBytesValue, publicKeyBytes);
+  const isValid = await ed.verifyAsync(signatureBytes, messageBytesValue, publicKeyBytes);
   if (!isValid) return reply.code(400).send({ error: 'Invalid signature' });
 
   const duplicate = records.find(
