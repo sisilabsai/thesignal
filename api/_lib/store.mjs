@@ -1,7 +1,16 @@
 import { Redis } from '@upstash/redis';
 
-const KV_KEY = 'signal:records';
-const memoryStore = globalThis.__signalMemoryStore || { records: [] };
+const KV_KEYS = {
+  records: 'signal:records',
+  submissions: 'signal:submissions',
+  alerts: 'signal:alerts'
+};
+
+const memoryStore = globalThis.__signalMemoryStore || {
+  records: [],
+  submissions: [],
+  alerts: []
+};
 if (!globalThis.__signalMemoryStore) {
   globalThis.__signalMemoryStore = memoryStore;
 }
@@ -17,24 +26,43 @@ const redis = hasUpstash
     })
   : null;
 
-async function readRecords() {
-  if (!redis) return memoryStore.records;
-  const stored = await redis.get(KV_KEY);
-  return Array.isArray(stored) ? stored : [];
+async function readList(key, fallback = []) {
+  if (!redis) return memoryStore[key] || fallback;
+  const stored = await redis.get(key);
+  return Array.isArray(stored) ? stored : fallback;
 }
 
-async function writeRecords(records) {
+async function writeList(key, value) {
   if (!redis) {
-    memoryStore.records = records;
+    memoryStore[key] = value;
     return;
   }
-  await redis.set(KV_KEY, records);
+  await redis.set(key, value);
 }
 
 export async function getRecords() {
-  return readRecords();
+  return readList(KV_KEYS.records, []);
 }
 
 export async function setRecords(records) {
-  await writeRecords(records);
+  await writeList(KV_KEYS.records, records);
+}
+
+export async function getSubmissions() {
+  return readList(KV_KEYS.submissions, []);
+}
+
+export async function addSubmission(submission) {
+  const submissions = await getSubmissions();
+  submissions.push(submission);
+  await writeList(KV_KEYS.submissions, submissions);
+  return submission;
+}
+
+export async function getAlerts() {
+  return readList(KV_KEYS.alerts, []);
+}
+
+export async function setAlerts(alerts) {
+  await writeList(KV_KEYS.alerts, alerts);
 }

@@ -1,5 +1,7 @@
 import { normalizeText } from '../../packages/shared/signing.mjs';
 
+export { normalizeText };
+
 export function isValidUrl(value) {
   try {
     const url = new URL(value);

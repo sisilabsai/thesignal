@@ -13,6 +13,7 @@
     "@fastify/static": "^6.12.0",
     "@noble/ed25519": "^2.1.0",
     "@noble/hashes": "^1.4.0",
+    "nodemailer": "^6.9.13",
     "@upstash/redis": "^1.28.4",
     "fastify": "^4.26.2"
   },

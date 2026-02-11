@@ -16,6 +16,7 @@
         </div>
         <nav class="nav">
           <a class="nav-link" href="/extension.html">Install Extension</a>
+          <a class="nav-link" href="/submit.html">Submit Source</a>
           <a class="nav-link" href="#index">Index</a>
           <a class="nav-link" href="/api/health">API</a>
           <a class="nav-link" href="https://github.com/sisilabsai/thesignal" target="_blank" rel="noreferrer">GitHub</a>
@@ -74,6 +75,21 @@
           <div class="trust-card">
             <h3>Open by design</h3>
             <p>Pair verified content with an open feed of trusted sources so readers always have signal.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="contribute" id="contribute">
+        <div class="container contribute-grid">
+          <div class="signal-card">
+            <h3>Publish your work</h3>
+            <p class="muted">Install the extension and sign your best insights in seconds.</p>
+            <a class="btn secondary" href="/extension.html">Install Extension</a>
+          </div>
+          <div class="signal-card">
+            <h3>Submit a publication</h3>
+            <p class="muted">Recommend a site or publisher to join the open feed review.</p>
+            <a class="btn outline" href="/submit.html">Submit Source</a>
           </div>
         </div>
       </section>
@@ -146,6 +162,26 @@
             </div>
           </div>
 
+          <section class="alerts" id="alerts">
+            <div class="alert-card">
+              <div>
+                <h3>Saved searches & alerts</h3>
+                <p class="muted">Get email when new verified items match your query.</p>
+              </div>
+              <div class="alert-form">
+                <input id="alert-query" class="form-input" type="text" placeholder="Search query" />
+                <input id="alert-email" class="form-input" type="email" placeholder="you@company.com" />
+                <select id="alert-frequency">
+                  <option value="daily">Daily</option>
+                  <option value="weekly">Weekly</option>
+                </select>
+                <button id="alert-save" class="btn secondary">Save Alert</button>
+              </div>
+              <div class="alert-status" id="alert-status"></div>
+              <div class="alert-note">Alerts only scan verified items.</div>
+            </div>
+          </section>
+
           <div class="status" id="status"></div>
 
           <section id="detail" class="detail hidden"></section>
@@ -210,6 +246,7 @@
         </div>
         <div class="footer-links">
           <a href="/extension.html">Install Extension</a>
+          <a href="/submit.html">Submit Source</a>
           <a href="#index">Index</a>
           <a href="/api/health">API</a>
           <a href="https://github.com/sisilabsai/thesignal" target="_blank" rel="noreferrer">GitHub</a>

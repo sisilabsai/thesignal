@@ -32,6 +32,11 @@ This repo contains the first MVP for The Signal:
 - Public domain: `https://thesignal-rho.vercel.app`
 - The extension defaults to the Vercel API base unless overridden in options.
 - For persistence on Vercel, add an Upstash Redis integration and set `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN`.
+- For email alerts and submissions, set SMTP env vars:
+  - `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`
+  - `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM`
+  - Optional: `SUBMISSIONS_NOTIFY` (where submission emails are sent)
+- To send alerts, schedule a cron to POST `/api/alerts/run` (Vercel Cron or external scheduler).
 
 ## Data storage
 

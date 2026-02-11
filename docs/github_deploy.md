@@ -154,3 +154,21 @@ curl https://thesignal-rho.vercel.app/api/health
 ```text
 https://thesignal-rho.vercel.app
 ```
+
+## Vercel environment variables
+
+- Upstash Redis (persistence)
+  - `UPSTASH_REDIS_REST_URL`
+  - `UPSTASH_REDIS_REST_TOKEN`
+- SMTP (alerts + submissions)
+  - `SMTP_HOST`
+  - `SMTP_PORT`
+  - `SMTP_SECURE`
+  - `SMTP_USER`
+  - `SMTP_PASS`
+- `SMTP_FROM`
+- Optional: `SUBMISSIONS_NOTIFY`
+
+## Alert scheduler
+
+Use Vercel Cron (or external scheduler) to POST `https://thesignal-rho.vercel.app/api/alerts/run` daily or weekly.

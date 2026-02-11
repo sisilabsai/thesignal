@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Submit a Source - The Signal</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container header-inner">
+        <div class="brand-wrap">
+          <span class="brand">The Signal</span>
+          <span class="pill">Submit</span>
+        </div>
+        <nav class="nav">
+          <a class="nav-link" href="/">Index</a>
+          <a class="nav-link" href="/extension.html">Install Extension</a>
+          <a class="nav-link" href="https://github.com/sisilabsai/thesignal" target="_blank" rel="noreferrer">GitHub</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="container" style="padding: 40px 24px 64px;">
+      <section class="profile-card">
+        <h1>Submit a publication or source</h1>
+        <p class="hero-lede">Recommend trusted sources for the open feed or verification review.</p>
+        <form id="submit-form" class="form-grid">
+          <div class="form-field">
+            <label for="name">Publication name</label>
+            <input class="form-input" id="name" type="text" placeholder="Example Research Lab" required />
+          </div>
+          <div class="form-field">
+            <label for="url">Website URL</label>
+            <input class="form-input" id="url" type="url" placeholder="https://example.com" required />
+          </div>
+          <div class="form-field">
+            <label for="contact">Contact email</label>
+            <input class="form-input" id="contact" type="email" placeholder="editor@example.com" required />
+          </div>
+          <div class="form-field">
+            <label for="sample">Sample article URL</label>
+            <input class="form-input" id="sample" type="url" placeholder="https://example.com/article" />
+          </div>
+          <div class="form-field">
+            <label for="category">Category</label>
+            <input class="form-input" id="category" type="text" placeholder="Tech, Research, Policy" />
+          </div>
+          <div class="form-field">
+            <label for="notes">Notes</label>
+            <textarea class="form-input" id="notes" rows="4" placeholder="Why this source matters"></textarea>
+          </div>
+          <button class="btn secondary" type="submit">Submit</button>
+          <div class="alert-status" id="submit-status"></div>
+        </form>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-inner">
+        <div>
+          <div class="brand">The Signal</div>
+          <div class="muted">Restoring the human premium to the web.</div>
+        </div>
+        <div class="footer-links">
+          <a href="/">Index</a>
+          <a href="/extension.html">Install Extension</a>
+          <a href="/api/health">API</a>
+        </div>
+      </div>
+    </footer>
+
+    <script src="/submit.js"></script>
+  </body>
+</html>

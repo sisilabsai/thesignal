@@ -19,6 +19,11 @@ const copyApiBtn = document.getElementById('copy-api');
 const verifiedCountEl = document.getElementById('verified-count');
 const openCountEl = document.getElementById('open-count');
 const signalStatusEl = document.getElementById('signal-status');
+const alertQueryInput = document.getElementById('alert-query');
+const alertEmailInput = document.getElementById('alert-email');
+const alertFrequencySelect = document.getElementById('alert-frequency');
+const alertSaveBtn = document.getElementById('alert-save');
+const alertStatusEl = document.getElementById('alert-status');
 
 const params = new URLSearchParams(window.location.search);
 const currentId = params.get('id');
@@ -45,13 +50,22 @@ function setStatus(message, isError = false) {
   statusEl.style.color = isError ? '#b00020' : '#5f5b54';
 }
 
+function setAlertStatus(message, isError = false) {
+  if (!alertStatusEl) return;
+  alertStatusEl.textContent = message;
+  alertStatusEl.style.color = isError ? '#b00020' : '#5f5b54';
+}
+
 function savePrefs() {
   const prefs = {
     query: queryInput.value.trim(),
     verified: verifiedToggle.checked,
     open: openToggle.checked,
     sort: sortSelect.value,
-    view: viewSelect.value
+    view: viewSelect.value,
+    alertEmail: alertEmailInput?.value?.trim() || '',
+    alertFrequency: alertFrequencySelect?.value || 'daily',
+    alertQuery: alertQueryInput?.value?.trim() || ''
   };
   localStorage.setItem(PREFS_KEY, JSON.stringify(prefs));
 }
@@ -65,8 +79,8 @@ function loadPrefs() {
   }
 }
 
-async function fetchJson(url) {
-  const res = await fetch(url);
+async function fetchJson(url, options) {
+  const res = await fetch(url, options);
   if (!res.ok) throw new Error(`Request failed: ${res.status}`);
   return res.json();
 }
@@ -79,12 +93,15 @@ function getDomain(url) {
   }
 }
 
-function renderAuthor(author) {
+function renderAuthor(author, fingerprint) {
   if (!author) return '';
   const displayName = author.name || author.handle || 'Unknown';
   const handle = author.name && author.handle ? ` <span class="handle">${escapeHtml(author.handle)}</span>` : '';
   const url = author.url ? ` <span class="author-url">${escapeHtml(author.url)}</span>` : '';
-  return `<div class="author">By ${escapeHtml(displayName)}${handle}${url}</div>`;
+  const nameMarkup = fingerprint
+    ? `<a href="/author.html?fingerprint=${encodeURIComponent(fingerprint)}">${escapeHtml(displayName)}</a>`
+    : escapeHtml(displayName);
+  return `<div class="author">By ${nameMarkup}${handle}${url}</div>`;
 }
 
 function renderCard(item, type) {
@@ -112,7 +129,7 @@ function renderCard(item, type) {
         <span class="${labelClass}">${label}</span>
       </div>
       <div class="url">${escapeHtml(item.url)}</div>
-      ${type === 'open' ? '' : renderAuthor(item.author)}
+      ${type === 'open' ? '' : renderAuthor(item.author, item.fingerprint)}
       <p class="excerpt">${escapeHtml(item.excerpt)}</p>
       <div class="meta">
         ${metaLine}
@@ -139,16 +156,20 @@ function renderDetail(record) {
 
   const author = record.author;
   const authorBio = author?.bio ? `<div class="author-bio">${escapeHtml(author.bio)}</div>` : '';
+  const authorLink = record.fingerprint
+    ? `<a class="btn ghost" href="/author.html?fingerprint=${encodeURIComponent(record.fingerprint)}">View Author Profile</a>`
+    : '';
 
   detailEl.innerHTML = `
     <div class="detail-card">
       <a class="back" href="/">Back to index</a>
       <h1>${escapeHtml(record.title)}</h1>
       <div class="url">${escapeHtml(record.url)}</div>
-      ${renderAuthor(author)}
+      ${renderAuthor(author, record.fingerprint)}
       ${authorBio}
       <div class="detail-actions">
         <a class="btn ghost" href="${escapeHtml(record.url)}" target="_blank" rel="noreferrer">Open Source</a>
+        ${authorLink}
         <button class="btn outline" id="copy-link">Copy Share Link</button>
       </div>
       <p class="excerpt">${escapeHtml(record.excerpt)}</p>
@@ -285,6 +306,34 @@ async function checkApiStatus() {
   }
 }
 
+async function saveAlert() {
+  const email = alertEmailInput.value.trim();
+  const query = alertQueryInput.value.trim();
+  const frequency = alertFrequencySelect.value;
+
+  if (!email || !email.includes('@')) {
+    setAlertStatus('Enter a valid email.', true);
+    return;
+  }
+  if (!query) {
+    setAlertStatus('Enter a search query.', true);
+    return;
+  }
+
+  setAlertStatus('Saving alert...');
+  try {
+    await fetchJson('/api/alerts', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, query, frequency })
+    });
+    setAlertStatus('Alert saved. Check your inbox for confirmation.');
+    savePrefs();
+  } catch (err) {
+    setAlertStatus(`Failed to save alert: ${err.message}`, true);
+  }
+}
+
 async function loadIndex() {
   const query = queryInput.value.trim();
   setStatus('Loading index...');
@@ -322,6 +371,10 @@ async function loadIndex() {
     statusLineEl.textContent = `Open feed updated: ${open.generatedAt}`;
   }
 
+  if (alertQueryInput && !alertQueryInput.value.trim()) {
+    alertQueryInput.value = query;
+  }
+
   savePrefs();
 }
 
@@ -336,11 +389,13 @@ async function loadDetail(id) {
 
 searchBtn.addEventListener('click', () => {
   window.history.replaceState({}, '', `/?query=${encodeURIComponent(queryInput.value.trim())}`);
+  if (alertQueryInput) alertQueryInput.value = queryInput.value.trim();
   loadIndex();
 });
 
 clearBtn.addEventListener('click', () => {
   queryInput.value = '';
+  if (alertQueryInput) alertQueryInput.value = '';
   window.history.replaceState({}, '', '/');
   loadIndex();
 });
@@ -359,6 +414,8 @@ viewSelect.addEventListener('change', () => {
   resultsEl.classList.toggle('stack', viewSelect.value === 'stack');
   savePrefs();
 });
+
+alertSaveBtn?.addEventListener('click', saveAlert);
 
 copyApiBtn?.addEventListener('click', async () => {
   const text = API_BASE;
@@ -379,6 +436,9 @@ if (typeof prefs.verified === 'boolean') verifiedToggle.checked = prefs.verified
 if (typeof prefs.open === 'boolean') openToggle.checked = prefs.open;
 if (prefs.sort) sortSelect.value = prefs.sort;
 if (prefs.view) viewSelect.value = prefs.view;
+if (alertEmailInput && prefs.alertEmail) alertEmailInput.value = prefs.alertEmail;
+if (alertFrequencySelect && prefs.alertFrequency) alertFrequencySelect.value = prefs.alertFrequency;
+if (alertQueryInput && prefs.alertQuery) alertQueryInput.value = prefs.alertQuery;
 resultsEl.classList.toggle('split', viewSelect.value === 'split');
 resultsEl.classList.toggle('stack', viewSelect.value === 'stack');
 
